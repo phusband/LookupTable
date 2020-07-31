@@ -15,21 +15,18 @@ namespace LookupTableConsole
         static void Main(string[] args)
         {
             var size = 10000;
-
-            //var sw = Stopwatch.StartNew();
-            //var dataTable = CreateDataTable(size);
-            //var dataRows = dataTable.Select("Strings = '5000'");
-            
-
-            //dataRows = dataTable.Select("Integers = 5000");
-            //dataRows = dataTable.Select("Strings = '250'");
-            //dataRows = dataTable.Select("Integers = 250");
-            //dataRows = dataTable.Select("Strings = '9250'");
-            //dataRows = dataTable.Select("Integers = 9250");
-            //var dtTicks = sw.ElapsedTicks;
-        
-            var dataTable2 = CreateDataTable(size);
+            var dataTable = CreateDataTable(size);
             var sw = Stopwatch.StartNew();
+            var selectedAll = dataTable.Select("Strings = '5000'").Any() &&
+                              dataTable.Select("Integers = 5000").Any() &&
+                              dataTable.Select("Strings = '250'").Any() &&
+                              dataTable.Select("Integers = 250").Any() &&
+                              dataTable.Select("Strings = '9250'").Any() &&
+                              dataTable.Select("Integers = 9250").Any();
+            var dtTicks = sw.ElapsedTicks;
+
+            var dataTable2 = CreateDataTable(size);
+            sw = Stopwatch.StartNew();
             var foundAll = dataTable2.AsEnumerable().Any(r => r.Field<string>("Strings") == "5000") &&
                            dataTable2.AsEnumerable().Any(r => r.Field<int>("Integers") == 5000) &&
                            dataTable2.AsEnumerable().Any(r => r.Field<string>("Strings") == "250") &&
@@ -48,10 +45,9 @@ namespace LookupTableConsole
                               lookupTable.Columns.Get<int>("Integers").HasValue(9250);
             var ltTicks = sw.ElapsedTicks;
 
-            //Console.WriteLine($"DataTable Select:\t{dtTicks}");
-            Console.WriteLine($"DataTable ForEach:\t{dt2Ticks}");
-
-            Console.WriteLine($"LookupTable Find:\t{ltTicks}");
+            Console.WriteLine($"DataTable Select:\t{dtTicks}");
+            Console.WriteLine($"DataTable Enumerable:\t{dt2Ticks}");
+            Console.WriteLine($"LookupTable HasValue:\t{ltTicks}");
 
             Console.ReadLine();
 
@@ -120,11 +116,6 @@ namespace LookupTableConsole
         static LookupTable CreateLookupTableFromDataTable(DataTable table)
         {
             return new LookupTable(table);
-        }
-
-        static void WriteRows(IEnumerable<DataRow> rows)
-        {
-                Console.WriteLine(rows.Count());
         }
     }
 }
