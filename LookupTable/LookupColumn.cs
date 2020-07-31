@@ -16,13 +16,68 @@ namespace Lookup
         void Clear();
         void ClearData();
         object GetAt(int rowIndex);
+        bool IsNull(int rowIndex);
         void RemoveAt(int rowIndex);
         void SetAt(int rowIndex, object value);
         void SetNull(int rowIndex);
-        bool IsNull(int rowIndex);
+        
     }
 
-    public class LookupColumn<T> : ILookupColumn
+    internal static class LookupColumn
+    {
+        internal static ILookupColumn CreateFromType(LookupTable table, Type type, string name)
+        {
+            switch (type)
+            {
+                case Type stringType when stringType == typeof(string):
+                    return new LookupColumn<string>(table, name);
+
+                case Type intType when intType == typeof(int):
+                    return new LookupColumn<int>(table, name);
+
+                case Type doubleType when doubleType == typeof(double):
+                    return new LookupColumn<double>(table, name);
+
+                case Type dateType when dateType == typeof(DateTime):
+                    return new LookupColumn<DateTime>(table, name);
+
+                case Type longType when longType == typeof(long):
+                    return new LookupColumn<long>(table, name);
+
+                case Type boolType when boolType == typeof(bool):
+                    return new LookupColumn<bool>(table, name);
+
+                case Type shortType when shortType == typeof(short):
+                    return new LookupColumn<short>(table, name);
+
+                case Type floatType when floatType == typeof(float):
+                    return new LookupColumn<float>(table, name);
+
+                case Type decimalType when decimalType == typeof(decimal):
+                    return new LookupColumn<decimal>(table, name);
+
+                case Type byteType when byteType == typeof(byte[]):
+                    return new LookupColumn<byte[]>(table, name);
+
+                case Type charType when charType == typeof(char):
+                    return new LookupColumn<char>(table, name);
+
+                case Type uintType when uintType == typeof(uint):
+                    return new LookupColumn<uint>(table, name);
+
+                case Type ushortType when ushortType == typeof(ushort):
+                    return new LookupColumn<ushort>(table, name);
+
+                case Type ulongType when ulongType == typeof(ulong):
+                    return new LookupColumn<ulong>(table, name);
+
+                default:
+                    return new LookupColumn<object>(table, name);
+            }
+        }
+    }
+
+    public sealed class LookupColumn<T> : ILookupColumn
     {
         #region Properties
 
@@ -187,6 +242,8 @@ namespace Lookup
             _nullMap.Add(rowIndex);
         }
 
+        public bool HasValue(T value) => _indexMap.ContainsKey(value);
+
         public bool TryGetValue(int index, out T value) => _valueMap.TryGetValue(index, out value);
 
         public override string ToString()
@@ -208,7 +265,7 @@ namespace Lookup
 
         void ILookupColumn.SetAt(int rowIndex, object value)
         {
-            if (value == null)
+            if (value == null || value == DBNull.Value)
             {
                 SetNull(rowIndex);
             }

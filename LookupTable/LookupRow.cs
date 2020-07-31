@@ -2,7 +2,7 @@
 
 namespace Lookup
 {
-    public class LookupRow
+    public sealed class LookupRow
     {
         #region Properties
 
@@ -31,6 +31,10 @@ namespace Lookup
         public T Get<T>(int columnIndex) => Table.GetItem<T>(columnIndex, this.Index);
 
         public object[] GetItems() => Table?.GetItems(this.Index);
+
+        public bool HasValue<T>(string columnName, T value) => HasValue<T>(Table.Columns.IndexOf(columnName), value);
+
+        public bool HasValue<T>(int columnIndex, T value) => Table.Columns.GetAt<T>(columnIndex).FindIndexes(value).Contains(this.Index);
 
         public bool IsNull(string columnName) => IsNull(Table.Columns.IndexOf(columnName));
 

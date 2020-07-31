@@ -35,7 +35,19 @@ namespace Lookup
         public LookupTable(DataTable table)
             : this()
         {
-            //table.cr
+            this.Name = table.TableName;
+            foreach (DataColumn dataColumn in table.Columns)
+            {
+                var column = LookupColumn.CreateFromType(this, dataColumn.DataType, dataColumn.ColumnName);
+                this.Columns.Add(column);
+            }
+
+            for (int i = 0; i < table.Rows.Count; i++)
+            {
+                this.Rows.Add();
+                foreach(ILookupColumn column in this.Columns)
+                    column.SetAt(i, table.Rows[i][column.Ordinal]);
+            }
         }
 
         #endregion

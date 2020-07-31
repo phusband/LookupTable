@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Lookup
 {
-    public class LookupColumnCollection : IEnumerable<ILookupColumn>
+    public sealed class LookupColumnCollection : IEnumerable<ILookupColumn>
     {
         #region Properties
 
@@ -57,7 +57,12 @@ namespace Lookup
             }
         }
 
-        internal ILookupColumn GetAt(int columnIndex)
+
+        public ILookupColumn Get(string columnName) => GetAt(IndexOf(columnName));
+
+        public LookupColumn<T> Get<T>(string columnName) => GetAt<T>(IndexOf(columnName));
+
+        public ILookupColumn GetAt(int columnIndex)
         {
             if (columnIndex < 0 || columnIndex >= _columns.Count)
                 throw new ArgumentOutOfRangeException(nameof(columnIndex));
@@ -65,7 +70,7 @@ namespace Lookup
             return _columns[columnIndex];
         }
 
-        internal LookupColumn<T> GetAt<T>(int columnIndex)
+        public LookupColumn<T> GetAt<T>(int columnIndex)
         {
             ILookupColumn iColumn = GetAt(columnIndex);
             if (!(iColumn is LookupColumn<T> column))
@@ -74,15 +79,19 @@ namespace Lookup
             return column;
         }
 
+        public void Add(ILookupColumn column)
+        {
+            if (_columnMap.ContainsKey(column.Name))
+                throw new Exception($"Column {column.Name} already exists.");
+
+            _columns.Add(column);
+            _columnMap.Add(column.Name, _columnMap.Count);
+        }
 
         public LookupColumn<T> Add<T>(string name, IEqualityComparer<T> comparer = null)
         {
-            if (_columnMap.ContainsKey(name))
-                throw new Exception($"Column {name} already exists.");
-
             var column = new LookupColumn<T>(this.Table, name, comparer);
-            _columns.Add(column);
-            _columnMap.Add(name, _columnMap.Count);
+            Add(column);
 
             return column;
         }

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Lookup
 {
-    public class LookupRowCollection : IEnumerable<LookupRow>
+    public sealed class LookupRowCollection : IEnumerable<LookupRow>
     {
         #region Properties
 
@@ -20,7 +20,6 @@ namespace Lookup
         internal LookupRowCollection(LookupTable table)
         {
             Table = table;
-
             Count = 0;
         }
 
