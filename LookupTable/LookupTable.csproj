@@ -7,7 +7,7 @@
     <ProjectGuid>{313189DA-AAC4-4599-97D2-B996C3925734}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LookupTable</RootNamespace>
+    <RootNamespace>Lookup</RootNamespace>
     <AssemblyName>LookupTable</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -41,6 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LookupColumn.cs" />
+    <Compile Include="LookupColumnCollection.cs" />
+    <Compile Include="LookupRow.cs" />
+    <Compile Include="LookupRowCollection.cs" />
     <Compile Include="LookupTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
