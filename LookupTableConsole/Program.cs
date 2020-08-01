@@ -49,6 +49,8 @@ namespace LookupTableConsole
             Console.WriteLine($"DataTable Enumerable:\t{dt2Ticks}");
             Console.WriteLine($"LookupTable HasValue:\t{ltTicks}");
 
+            var converted = CreateLookupTableFromDataTable(dataTable);
+
             Console.ReadLine();
 
         }

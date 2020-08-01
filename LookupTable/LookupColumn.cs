@@ -20,60 +20,35 @@ namespace Lookup
         void RemoveAt(int rowIndex);
         void SetAt(int rowIndex, object value);
         void SetNull(int rowIndex);
-        
+
     }
 
     internal static class LookupColumn
     {
-        internal static ILookupColumn CreateFromType(LookupTable table, Type type, string name)
+        private static readonly Dictionary<Type, Func<LookupTable, string, ILookupColumn>> CtorMap = new Dictionary<Type, Func<LookupTable, string, ILookupColumn>>
         {
-            switch (type)
-            {
-                case Type stringType when stringType == typeof(string):
-                    return new LookupColumn<string>(table, name);
+            { typeof(string),   (t, n) => { return new LookupColumn<string>  (t, n);} },
+            { typeof(int),      (t, n) => { return new LookupColumn<int>     (t, n);} },
+            { typeof(double),   (t, n) => { return new LookupColumn<double>  (t, n);} },
+            { typeof(DateTime), (t, n) => { return new LookupColumn<DateTime>(t, n);} },
+            { typeof(long),     (t, n) => { return new LookupColumn<long>    (t, n);} },
+            { typeof(bool),     (t, n) => { return new LookupColumn<bool>    (t, n);} },
+            { typeof(short),    (t, n) => { return new LookupColumn<short>   (t, n);} },
+            { typeof(float),    (t, n) => { return new LookupColumn<float>   (t, n);} },
+            { typeof(decimal),  (t, n) => { return new LookupColumn<decimal> (t, n);} },
+            { typeof(byte[]),   (t, n) => { return new LookupColumn<byte[]>  (t, n);} },
+            { typeof(char),     (t, n) => { return new LookupColumn<char>    (t, n);} },
+            { typeof(uint),     (t, n) => { return new LookupColumn<uint>    (t, n);} },
+            { typeof(ushort),   (t, n) => { return new LookupColumn<ushort>  (t, n);} },
+            { typeof(ulong),    (t, n) => { return new LookupColumn<ulong>   (t, n);} },
+        };
 
-                case Type intType when intType == typeof(int):
-                    return new LookupColumn<int>(table, name);
+        internal static ILookupColumn CreateFromType(Type type, LookupTable table, string name)
+        {
+            if (!CtorMap.TryGetValue(type, out Func<LookupTable, string, ILookupColumn> ctor))
+                return new LookupColumn<object>(table, name);
 
-                case Type doubleType when doubleType == typeof(double):
-                    return new LookupColumn<double>(table, name);
-
-                case Type dateType when dateType == typeof(DateTime):
-                    return new LookupColumn<DateTime>(table, name);
-
-                case Type longType when longType == typeof(long):
-                    return new LookupColumn<long>(table, name);
-
-                case Type boolType when boolType == typeof(bool):
-                    return new LookupColumn<bool>(table, name);
-
-                case Type shortType when shortType == typeof(short):
-                    return new LookupColumn<short>(table, name);
-
-                case Type floatType when floatType == typeof(float):
-                    return new LookupColumn<float>(table, name);
-
-                case Type decimalType when decimalType == typeof(decimal):
-                    return new LookupColumn<decimal>(table, name);
-
-                case Type byteType when byteType == typeof(byte[]):
-                    return new LookupColumn<byte[]>(table, name);
-
-                case Type charType when charType == typeof(char):
-                    return new LookupColumn<char>(table, name);
-
-                case Type uintType when uintType == typeof(uint):
-                    return new LookupColumn<uint>(table, name);
-
-                case Type ushortType when ushortType == typeof(ushort):
-                    return new LookupColumn<ushort>(table, name);
-
-                case Type ulongType when ulongType == typeof(ulong):
-                    return new LookupColumn<ulong>(table, name);
-
-                default:
-                    return new LookupColumn<object>(table, name);
-            }
+            return ctor.Invoke(table, name);
         }
     }
 

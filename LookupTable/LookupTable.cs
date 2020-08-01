@@ -38,7 +38,7 @@ namespace Lookup
             this.Name = table.TableName;
             foreach (DataColumn dataColumn in table.Columns)
             {
-                var column = LookupColumn.CreateFromType(this, dataColumn.DataType, dataColumn.ColumnName);
+                var column = LookupColumn.CreateFromType( dataColumn.DataType, this, dataColumn.ColumnName);
                 this.Columns.Add(column);
             }
 
