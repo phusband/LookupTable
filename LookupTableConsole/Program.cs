@@ -15,42 +15,10 @@ namespace LookupTableConsole
         static void Main(string[] args)
         {
             var size = 10000;
-            var dataTable = CreateDataTable(size);
-            var sw = Stopwatch.StartNew();
-            var selectedAll = dataTable.Select("Strings = '5000'").Any() &&
-                              dataTable.Select("Integers = 5000").Any() &&
-                              dataTable.Select("Strings = '250'").Any() &&
-                              dataTable.Select("Integers = 250").Any() &&
-                              dataTable.Select("Strings = '9250'").Any() &&
-                              dataTable.Select("Integers = 9250").Any();
-            var dtTicks = sw.ElapsedTicks;
-
-            var dataTable2 = CreateDataTable(size);
-            sw = Stopwatch.StartNew();
-            var foundAll = dataTable2.AsEnumerable().Any(r => r.Field<string>("Strings") == "5000") &&
-                           dataTable2.AsEnumerable().Any(r => r.Field<int>("Integers") == 5000) &&
-                           dataTable2.AsEnumerable().Any(r => r.Field<string>("Strings") == "250") &&
-                           dataTable2.AsEnumerable().Any(r => r.Field<int>("Integers") == 250) &&
-                           dataTable2.AsEnumerable().Any(r => r.Field<string>("Strings") == "9250") &&
-                           dataTable2.AsEnumerable().Any(r => r.Field<int>("Integers") == 9250);
-            var dt2Ticks = sw.ElapsedTicks;
-           
-            var lookupTable = CreateLookupTable(size);
-            sw = Stopwatch.StartNew();
-            var lookedUpAll = lookupTable.Columns.Get<string>("Strings").HasValue("5000") &&
-                              lookupTable.Columns.Get<int>("Integers").HasValue(5000) &&
-                              lookupTable.Columns.Get<string>("Strings").HasValue("250") &&
-                              lookupTable.Columns.Get<int>("Integers").HasValue(250) &&
-                              lookupTable.Columns.Get<string>("Strings").HasValue("9250") &&
-                              lookupTable.Columns.Get<int>("Integers").HasValue(9250);
-            var ltTicks = sw.ElapsedTicks;
-
-            Console.WriteLine($"DataTable Select:\t{dtTicks}");
-            Console.WriteLine($"DataTable Enumerable:\t{dt2Ticks}");
-            Console.WriteLine($"LookupTable HasValue:\t{ltTicks}");
-
-            var converted = CreateLookupTableFromDataTable(dataTable);
-
+            LookupTableHasValue(size);
+            DataTableSelect(size);
+            DataTableEnumerable(size);
+            
             Console.ReadLine();
 
         }
@@ -88,9 +56,54 @@ namespace LookupTableConsole
             return table;
         }
 
+        static bool DataTableSelect(int size)
+        {
+            var dataTable = CreateDataTable(size);
+            var sw = Stopwatch.StartNew();
+            var selectedAll = dataTable.Select("Strings = '5000'").Any() &&
+                              dataTable.Select("Integers = 5000").Any() &&
+                              dataTable.Select("Strings = '250'").Any() &&
+                              dataTable.Select("Integers = 250").Any() &&
+                              dataTable.Select("Strings = '9250'").Any() &&
+                              dataTable.Select("Integers = 9250").Any();
+
+            Console.WriteLine($"DataTable Select:\t{sw.ElapsedTicks}");
+            return selectedAll;
+        }
+
+        static bool DataTableEnumerable(int size)
+        {            
+            var dataTable2 = CreateDataTable(size);
+            var sw = Stopwatch.StartNew();
+            var foundAll = dataTable2.AsEnumerable().Any(r => r.Field<string>("Strings") == "5000") &&
+                           dataTable2.AsEnumerable().Any(r => r.Field<int>("Integers") == 5000) &&
+                           dataTable2.AsEnumerable().Any(r => r.Field<string>("Strings") == "250") &&
+                           dataTable2.AsEnumerable().Any(r => r.Field<int>("Integers") == 250) &&
+                           dataTable2.AsEnumerable().Any(r => r.Field<string>("Strings") == "9250") &&
+                           dataTable2.AsEnumerable().Any(r => r.Field<int>("Integers") == 9250);
+
+            Console.WriteLine($"DataTable Enumerable:\t{sw.ElapsedTicks}");
+            return foundAll;
+        }
+
+        static bool LookupTableHasValue(int size)
+        {            
+            var lookupTable = CreateLookupTable(size);
+            var sw = Stopwatch.StartNew();
+            var lookedUpAll = lookupTable.Columns.Get<string>("Strings").HasValue("5000") &&
+                              lookupTable.Columns.Get<int>("Integers").HasValue(5000) &&
+                              lookupTable.Columns.Get<string>("Strings").HasValue("250") &&
+                              lookupTable.Columns.Get<int>("Integers").HasValue(250) &&
+                              lookupTable.Columns.Get<string>("Strings").HasValue("9250") &&
+                              lookupTable.Columns.Get<int>("Integers").HasValue(9250);
+
+            Console.WriteLine($"LookupTable HasValue:\t{sw.ElapsedTicks}");
+            return lookedUpAll;
+        }
+
         static LookupTable CreateLookupTable(int size)
         {
-            var table = new LookupTable("LookupTable");
+            var table = new LookupTable("LookupTable", size);
             table.Columns.Add<int>("Integers");
             table.Columns.Add<string>("Strings");
             table.Columns.Add<double>("Doubles");

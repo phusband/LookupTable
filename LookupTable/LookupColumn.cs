@@ -60,8 +60,6 @@ namespace Lookup
         private Dictionary<T, HashSet<int>> _indexMap;
         private Dictionary<int, T> _valueMap;
 
-        internal bool CanStoreNullValues => !IsValueType || IsNullableType;
-
         public Type DataType { get; }
 
         public bool IsValueType { get; }
@@ -87,6 +85,7 @@ namespace Lookup
 
         internal LookupColumn(LookupTable table, string name, IEqualityComparer<T> comparer)
         {
+            Table = table;
             Name = name;
             Comparer = comparer ?? EqualityComparer<T>.Default;
 
@@ -96,10 +95,9 @@ namespace Lookup
             NullValue = default(T);
 
             _nullMap = new HashSet<int>();
-            _indexMap = new Dictionary<T, HashSet<int>>(Comparer);
-            _valueMap = new Dictionary<int, T>();
+            _indexMap = new Dictionary<T, HashSet<int>>(Table.DefaultColumnSize, Comparer);
+            _valueMap = new Dictionary<int, T>(Table.DefaultColumnSize);
 
-            Table = table;
         }
 
         #endregion

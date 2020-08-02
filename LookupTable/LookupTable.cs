@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace Lookup
 {
@@ -12,6 +9,8 @@ namespace Lookup
 
         public LookupColumnCollection Columns { get; }
 
+        public int DefaultColumnSize { get; set; }
+
         public string Name { get; set; }
 
         public LookupRowCollection Rows { get; }
@@ -20,14 +19,18 @@ namespace Lookup
 
         #region Constructors
 
-        public LookupTable()
+        public LookupTable(int size = 0)
         {
+            DefaultColumnSize = size > 0 
+                ? size
+                : 1000;
+
             Columns = new LookupColumnCollection(this);
             Rows = new LookupRowCollection(this);
         }
 
-        public LookupTable(string name)
-            : this()
+        public LookupTable(string name, int size = 0)
+            : this(size)
         {
             Name = name;
         }
@@ -36,6 +39,8 @@ namespace Lookup
             : this()
         {
             this.Name = table.TableName;
+            DefaultColumnSize = table.Rows.Count;
+
             foreach (DataColumn dataColumn in table.Columns)
             {
                 var column = LookupColumn.CreateFromType( dataColumn.DataType, this, dataColumn.ColumnName);
